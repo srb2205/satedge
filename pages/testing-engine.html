@@ -1,0 +1,863 @@
+<!-- TESTING ENGINE FULL-SCREEN CONTAINER -->
+<div class="w-screen h-screen overflow-hidden bg-[#0F172A] flex flex-col">
+
+  <!-- HEADER UTILITY BAR -->
+  <header class="w-full bg-[#1E293B] border-b border-[#334155] px-6 py-4 flex items-center justify-between flex-shrink-0">
+    <!-- Left: Section & Question Counter -->
+    <div class="flex flex-col gap-1">
+      <span class="font-['Inter'] text-sm font-medium text-slate-300">Section 1: Reading and Writing</span>
+      <span class="font-['JetBrains_Mono'] text-base font-semibold text-[#D4AF37]">Question <span id="current-q-num">1</span> of 20</span>
+    </div>
+
+    <!-- Center: Countdown Timer (Clickable Toggle) -->
+    <div class="flex flex-col items-center">
+      <button 
+        id="timer-toggle"
+        class="font-['JetBrains_Mono'] text-4xl font-bold text-white transition-opacity duration-300 cursor-pointer hover:opacity-80"
+        style="opacity: 1;"
+      >
+        <span id="timer-display">31:45</span>
+      </button>
+      <span class="font-['Inter'] text-xs text-slate-500 mt-1">Click to hide/show</span>
+    </div>
+
+    <!-- Right: Utility Action Pills -->
+    <div class="flex gap-3">
+      <button class="px-4 py-2 bg-[#0F172A] border border-[#334155] text-slate-300 font-['Inter'] text-sm rounded-full hover:border-[#D4AF37] hover:text-[#D4AF37] transition-colors">
+        Line Focus
+      </button>
+      <button class="px-4 py-2 bg-[#0F172A] border border-[#334155] text-slate-300 font-['Inter'] text-sm rounded-full hover:border-[#D4AF37] hover:text-[#D4AF37] transition-colors">
+        Cross Out
+      </button>
+      <button id="mark-review-btn" class="px-4 py-2 bg-[#0F172A] border border-[#334155] text-slate-300 font-['Inter'] text-sm rounded-full hover:border-[#D4AF37] hover:text-[#D4AF37] transition-colors">
+        Mark for Review
+      </button>
+    </div>
+  </header>
+
+  <!-- MAIN DUAL-PANE WORKSPACE -->
+  <div class="flex-1 flex overflow-hidden">
+
+    <!-- LEFT PANE: Passage / Problem Context -->
+    <div class="w-1/2 bg-[#0F172A] border-r border-[#334155] overflow-y-auto p-8">
+      <div id="passage-container" class="prose prose-invert max-w-none">
+        <div id="passage-content" class="font-['Inter'] text-slate-300 text-base leading-relaxed select-text">
+          <!-- Passage text will be rendered here -->
+        </div>
+      </div>
+
+      <!-- Desmos Calculator Placeholder (Math Section) -->
+      <div id="calculator-container" class="hidden mt-8 p-6 bg-[#1E293B] border border-[#334155] rounded-lg">
+        <div class="text-center">
+          <p class="font-['JetBrains_Mono'] text-sm text-slate-400 mb-4">Scientific Calculator (Desmos Framework)</p>
+          <div class="w-full h-48 bg-[#0F172A] border border-[#334155] rounded flex items-center justify-center">
+            <span class="text-slate-500 text-sm">Calculator Interface Placeholder</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT PANE: Question & Multiple Choice -->
+    <div class="w-1/2 bg-[#0F172A] overflow-y-auto p-8 flex flex-col">
+      <!-- Question Stem -->
+      <div id="question-stem" class="mb-8">
+        <h2 id="question-text" class="font-['Space_Grotesk'] text-2xl font-semibold text-white leading-relaxed">
+          <!-- Question stem will render here -->
+        </h2>
+      </div>
+
+      <!-- Multiple Choice Options -->
+      <div id="choices-container" class="space-y-4 flex-1">
+        <!-- Choice buttons A, B, C, D will render here -->
+      </div>
+
+      <!-- Answer Summary -->
+      <div id="answer-summary" class="mt-auto pt-6 border-t border-[#334155]">
+        <p class="font-['Inter'] text-xs text-slate-500">
+          <span id="selected-choice-display">No answer selected</span>
+        </p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- FOOTER PROGRESS TRACKING TRAY -->
+  <footer class="w-full bg-[#1E293B] border-t border-[#334155] px-6 py-4 flex items-center justify-between flex-shrink-0">
+    <!-- Back Button -->
+    <button 
+      id="nav-back-btn"
+      class="px-6 py-2 bg-[#0F172A] border border-[#334155] text-slate-300 font-['Inter'] font-medium rounded-lg hover:border-[#D4AF37] hover:text-[#D4AF37] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+      disabled
+    >
+      ← Back
+    </button>
+
+    <!-- Question Number Grid (20 buttons) -->
+    <div id="question-grid" class="flex gap-2 flex-wrap justify-center max-w-2xl">
+      <!-- 20 numbered question buttons will render here -->
+    </div>
+
+    <!-- Next Button -->
+    <button 
+      id="nav-next-btn"
+      class="px-6 py-2 bg-[#D4AF37] text-[#0F172A] font-['Space_Grotesk'] font-semibold rounded-lg hover:bg-[#E5C158] transition-colors"
+    >
+      Next →
+    </button>
+  </footer>
+
+  <!-- SECTION TRANSITION MODAL (Hidden by default) -->
+  <div id="section-modal" class="hidden fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+    <div class="bg-[#1E293B] border border-[#334155] rounded-xl p-12 max-w-md text-center">
+      <h3 class="font-['Space_Grotesk'] text-2xl font-bold text-white mb-4">
+        Section 1 Complete
+      </h3>
+      <p class="font-['Inter'] text-slate-300 mb-8">
+        You've completed all 20 questions in Reading and Writing. Ready to begin Section 2: Math?
+      </p>
+      <button 
+        id="continue-to-math-btn"
+        class="px-8 py-3 bg-[#D4AF37] text-[#0F172A] font-['Space_Grotesk'] font-semibold rounded-lg hover:bg-[#E5C158] transition-colors"
+      >
+        Continue to Math Section
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // ============================================================
+  // DIAGNOSTIC QUESTION BANKS
+  // ============================================================
+
+  const englishDiagnosticBank = [
+    {
+      id: 1,
+      type: 'reading',
+      domain: 'Craft & Structure',
+      passage: `The Renaissance was a period of profound intellectual and artistic awakening across Europe. Scholars began to rediscover classical texts from ancient Greece and Rome, which had been largely forgotten during the Middle Ages. This revival of classical learning sparked a revolution in thought and creativity that would reshape Western civilization for centuries to come.`,
+      stem: 'Based on the passage, the primary reason the Renaissance led to such significant cultural change was the:',
+      choices: {
+        A: 'Invention of the printing press in Europe',
+        B: 'Rediscovery of ancient classical texts and ideas',
+        C: 'Rise of powerful merchant families in Italian city-states',
+        D: 'Development of new painting techniques by Italian masters'
+      },
+      correct: 'B',
+      domain_code: 'craft_structure'
+    },
+    {
+      id: 2,
+      type: 'reading',
+      domain: 'Information & Ideas',
+      passage: `Scientists have long debated the causes of the Cambrian Explosion—the sudden appearance of diverse animal life in the fossil record approximately 541 million years ago. Recent studies suggest that the development of predator-prey relationships, improved oxygen levels in oceans, and the evolution of eyes may have collectively triggered rapid diversification. However, some researchers argue that the apparent "explosion" is simply an artifact of the fossil record's limitations.`,
+      stem: 'Which statement is best supported by the passage?',
+      choices: {
+        A: 'The Cambrian Explosion occurred due to a single, well-understood cause',
+        B: 'The fossil record provides a complete picture of early animal evolution',
+        C: 'Multiple factors likely contributed to the rapid diversification of life during the Cambrian period',
+        D: 'Predator-prey relationships had no impact on the evolution of early animals'
+      },
+      correct: 'C',
+      domain_code: 'information_ideas'
+    },
+    {
+      id: 3,
+      type: 'writing',
+      domain: 'Transitions',
+      passage: `The student's essay was well-researched and contained compelling arguments. _____, several grammatical errors and organizational issues weakened the overall impact.`,
+      stem: 'Which choice best completes the sentence?',
+      choices: {
+        A: 'Furthermore,',
+        B: 'Nevertheless,',
+        C: 'Similarly,',
+        D: 'Accordingly,'
+      },
+      correct: 'B',
+      domain_code: 'transitions'
+    },
+    {
+      id: 4,
+      type: 'writing',
+      domain: 'Craft & Structure',
+      passage: `Original sentence: "The artist's unique style, which incorporated elements of both Cubism and Surrealism, influenced generations of painters who came after him."`,
+      stem: 'Which revision best improves the clarity of the sentence?',
+      choices: {
+        A: 'The artist's style incorporating both Cubism and Surrealism influenced generations.',
+        B: 'The artist influenced generations of painters with a unique style combining Cubism and Surrealism.',
+        C: 'Generations of painters were influenced by the artist's unique style of Cubism and Surrealism.',
+        D: 'The artist's style, which was both Cubism and Surrealism, influenced painting generations.'
+      },
+      correct: 'B',
+      domain_code: 'craft_structure'
+    },
+    {
+      id: 5,
+      type: 'reading',
+      domain: 'Information & Ideas',
+      passage: `Climate scientists warn that rising global temperatures are accelerating the melting of polar ice sheets. Data from satellite observations show that Arctic sea ice has declined by approximately 13% per decade since 1979. This loss of ice has far-reaching consequences, including disrupted ocean currents, altered weather patterns, and rising sea levels that threaten coastal communities worldwide.`,
+      stem: 'The passage suggests that the melting of polar ice is problematic primarily because it:',
+      choices: {
+        A: 'Makes Arctic exploration more difficult',
+        B: 'Reduces the habitat available for polar bears',
+        C: 'Triggers a cascade of environmental changes affecting global systems',
+        D: 'Contradicts previous scientific predictions about climate change'
+      },
+      correct: 'C',
+      domain_code: 'information_ideas'
+    },
+    {
+      id: 6,
+      type: 'writing',
+      domain: 'Craft & Structure',
+      passage: `The new technology promises to revolutionize how we communicate. It will enable faster data transmission, more secure connections, and provides greater accessibility for users in remote areas.`,
+      stem: 'Which choice corrects the parallel structure error in the sentence?',
+      choices: {
+        A: 'It enables faster data transmission, more secure connections, and greater accessibility.',
+        B: 'It will enable faster data transmission, more secure connections, and more accessibility.',
+        C: 'It enables faster data transmission, secures connections more, and provides accessibility.',
+        D: 'It will enable faster transmission, secure connections, and accessible areas.'
+      },
+      correct: 'A',
+      domain_code: 'craft_structure'
+    },
+    {
+      id: 7,
+      type: 'reading',
+      domain: 'Transitions',
+      passage: `The company invested heavily in renewable energy infrastructure. _____, they continued to rely on fossil fuels for a significant portion of their power generation.`,
+      stem: 'Which transition word best fits the context?',
+      choices: {
+        A: 'Accordingly,',
+        B: 'Moreover,',
+        C: 'Nevertheless,',
+        D: 'Consequently,'
+      },
+      correct: 'C',
+      domain_code: 'transitions'
+    },
+    {
+      id: 8,
+      type: 'writing',
+      domain: 'Information & Ideas',
+      passage: `The author argues that increased urbanization has both positive and negative effects on society.`,
+      stem: 'Based on this opening statement, what would likely follow?',
+      choices: {
+        A: 'A one-sided argument condemning all cities',
+        B: 'An explanation of specific benefits and drawbacks with supporting evidence',
+        C: 'A conclusion that urbanization is entirely beneficial',
+        D: 'Historical data about when cities were first established'
+      },
+      correct: 'B',
+      domain_code: 'information_ideas'
+    },
+    {
+      id: 9,
+      type: 'reading',
+      domain: 'Craft & Structure',
+      passage: `Photography, which began as a scientific tool in the 1800s, gradually evolved into one of the most powerful forms of artistic expression. Early photographers sought to document reality with mechanical precision. Yet artists soon discovered that the camera could also be used to challenge perception, manipulate emotion, and create profound visual narratives.`,
+      stem: 'The word "Yet" in the passage primarily serves to:',
+      choices: {
+        A: 'Introduce a contradictory development in photography',
+        B: 'Summarize the scientific achievements of early photographers',
+        C: 'Provide examples of specific artistic movements',
+        D: 'Transition from one historical period to another'
+      },
+      correct: 'A',
+      domain_code: 'craft_structure'
+    },
+    {
+      id: 10,
+      type: 'writing',
+      domain: 'Transitions',
+      passage: `The experimental treatment showed promising results in early trials. _____, the pharmaceutical company decided to proceed with further research and development.`,
+      stem: 'Which transition best connects these ideas?',
+      choices: {
+        A: 'In contrast,',
+        B: 'Consequently,',
+        C: 'Alternatively,',
+        D: 'Similarly,'
+      },
+      correct: 'B',
+      domain_code: 'transitions'
+    },
+    {
+      id: 11,
+      type: 'reading',
+      domain: 'Information & Ideas',
+      passage: `Neuroplasticity research demonstrates that the brain retains the ability to form new neural connections throughout life. This challenges the long-held belief that brain development is fixed after early childhood. Studies show that learning new skills, practicing meditation, and engaging in physical exercise can all strengthen neural pathways and improve cognitive function.`,
+      stem: 'The main idea of the passage is that:',
+      choices: {
+        A: 'The brain stops developing after childhood',
+        B: 'Meditation is the most effective way to improve cognitive function',
+        C: 'The brain's capacity to change and adapt persists throughout life',
+        D: 'Early childhood development determines adult intelligence'
+      },
+      correct: 'C',
+      domain_code: 'information_ideas'
+    },
+    {
+      id: 12,
+      type: 'writing',
+      domain: 'Craft & Structure',
+      passage: `The solar panel installation is expected to reduce energy costs. It will also lower the building's carbon footprint and creating a more sustainable future.`,
+      stem: 'Which revision corrects the error?',
+      choices: {
+        A: 'It will reduce costs and lower the carbon footprint and creates sustainability.',
+        B: 'It will reduce energy costs, lower the building's carbon footprint, and create a more sustainable future.',
+        C: 'Reducing energy costs, lowering carbon footprint, and creates a sustainable future.',
+        D: 'It reduces energy costs and lowers carbon footprint while creates sustainability.'
+      },
+      correct: 'B',
+      domain_code: 'craft_structure'
+    },
+    {
+      id: 13,
+      type: 'reading',
+      domain: 'Craft & Structure',
+      passage: `The novel presents a complex protagonist whose motivations are often unclear. The author intentionally leaves certain details ambiguous, allowing readers to form their own interpretations. This narrative technique deepens the reader's engagement with the character.`,
+      stem: 'The author's use of ambiguity serves primarily to:',
+      choices: {
+        A: 'Confuse readers about the plot',
+        B: 'Hide important information from the audience',
+        C: 'Encourage active reader interpretation and engagement',
+        D: 'Demonstrate the protagonist's unreliable nature'
+      },
+      correct: 'C',
+      domain_code: 'craft_structure'
+    },
+    {
+      id: 14,
+      type: 'writing',
+      domain: 'Information & Ideas',
+      passage: `The report analyzed three different approaches to urban planning. The first approach focused on reducing traffic congestion, the second on improving public transportation, and the third emphasized green spaces.`,
+      stem: 'What organizational pattern is demonstrated in this passage?',
+      choices: {
+        A: 'Chronological order',
+        B: 'Comparison and contrast',
+        C: 'Enumeration of multiple options',
+        D: 'Cause and effect relationships'
+      },
+      correct: 'C',
+      domain_code: 'information_ideas'
+    },
+    {
+      id: 15,
+      type: 'reading',
+      domain: 'Transitions',
+      passage: `The company's first quarter showed strong revenue growth. _____, the second quarter results were disappointing, falling short of investor expectations.`,
+      stem: 'Which transition word creates the most appropriate contrast?',
+      choices: {
+        A: 'Similarly,',
+        B: 'However,',
+        C: 'Additionally,',
+        D: 'Therefore,'
+      },
+      correct: 'B',
+      domain_code: 'transitions'
+    },
+    {
+      id: 16,
+      type: 'writing',
+      domain: 'Craft & Structure',
+      passage: `Effective leaders listen to their team members, take responsibility for decisions, and demonstrates integrity in all interactions.`,
+      stem: 'Which version corrects the verb form error?',
+      choices: {
+        A: 'Effective leaders listen, take responsibility, and demonstrate integrity.',
+        B: 'Effective leaders listens, takes responsibility, and demonstrates integrity.',
+        C: 'Effective leaders listening, taking responsibility, and demonstrating integrity.',
+        D: 'Effective leaders listen, took responsibility, and demonstrate integrity.'
+      },
+      correct: 'A',
+      domain_code: 'craft_structure'
+    },
+    {
+      id: 17,
+      type: 'reading',
+      domain: 'Information & Ideas',
+      passage: `Research on sleep deprivation reveals that inadequate sleep impairs cognitive function, weakens immune response, and increases the risk of chronic health conditions. The CDC recommends that adults get 7-9 hours of quality sleep each night. Despite this guidance, many Americans sleep less than recommended, contributing to widespread health problems.`,
+      stem: 'Based on the passage, the primary concern regarding sleep deprivation is its:',
+      choices: {
+        A: 'Impact on work productivity alone',
+        B: 'Effect on falling asleep quickly',
+        C: 'Broad influence on physical and mental health',
+        D: 'Relationship to nightmare frequency'
+      },
+      correct: 'C',
+      domain_code: 'information_ideas'
+    },
+    {
+      id: 18,
+      type: 'writing',
+      domain: 'Transitions',
+      passage: `The new policy was designed to increase efficiency. _____, it created unexpected complications for the staff.`,
+      stem: 'Which transition best shows the contrast?',
+      choices: {
+        A: 'Indeed,',
+        B: 'Afterward,',
+        C: 'Instead,',
+        D: 'In fact,'
+      },
+      correct: 'C',
+      domain_code: 'transitions'
+    },
+    {
+      id: 19,
+      type: 'reading',
+      domain: 'Craft & Structure',
+      passage: `The artist's use of color is deliberately restrained, employing a limited palette to create visual harmony. This minimalist approach contrasts sharply with the ornate decorative styles popular during that era.`,
+      stem: 'The passage suggests that the artist's color choices were:',
+      choices: {
+        A: 'Dictated by the limitations of available pigments',
+        B: 'Intentionally distinct from prevailing artistic trends',
+        C: 'Influenced by the artist's lack of technical skill',
+        D: 'Designed to confuse contemporary viewers'
+      },
+      correct: 'B',
+      domain_code: 'craft_structure'
+    },
+    {
+      id: 20,
+      type: 'writing',
+      domain: 'Information & Ideas',
+      passage: `The study followed two groups of participants: one that exercised regularly and one that remained sedentary.`,
+      stem: 'This opening sentence suggests the study will employ which research methodology?',
+      choices: {
+        A: 'Meta-analysis of existing research',
+        B: 'Comparative analysis of two contrasting groups',
+        C: 'Longitudinal tracking of a single population',
+        D: 'Qualitative interviews with study participants'
+      },
+      correct: 'B',
+      domain_code: 'information_ideas'
+    }
+  ];
+
+  const mathDiagnosticBank = [
+    {
+      id: 1,
+      type: 'math',
+      domain: 'Algebra',
+      stem: 'If 3x + 7 = 22, what is the value of x?',
+      choices: { A: '5', B: '9.67', C: '10.33', D: '15' },
+      correct: 'A',
+      domain_code: 'algebra'
+    },
+    {
+      id: 2,
+      type: 'math',
+      domain: 'Advanced Math',
+      stem: 'If f(x) = x² - 4x + 3, find f(5).',
+      choices: { A: '8', B: '-2', C: '28', D: '50' },
+      correct: 'A',
+      domain_code: 'advanced_math'
+    },
+    {
+      id: 3,
+      type: 'math',
+      domain: 'Algebra',
+      stem: 'Solve for y: 2y + 6 = 4y - 8',
+      choices: { A: '7', B: '-7', C: '1', D: '-1' },
+      correct: 'A',
+      domain_code: 'algebra'
+    },
+    {
+      id: 4,
+      type: 'math',
+      domain: 'Advanced Math',
+      stem: 'What is the slope of the line passing through (2, 3) and (5, 9)?',
+      choices: { A: '2', B: '3', C: '0.5', D: '1' },
+      correct: 'A',
+      domain_code: 'advanced_math'
+    },
+    {
+      id: 5,
+      type: 'math',
+      domain: 'Problem Solving',
+      stem: 'A store sells notebooks for $2 each. If a student buys 12 notebooks and pays with a $50 bill, how much change does the student receive?',
+      choices: { A: '$26', B: '$24', C: '$38', D: '$12' },
+      correct: 'A',
+      domain_code: 'problem_solving'
+    },
+    {
+      id: 6,
+      type: 'math',
+      domain: 'Algebra',
+      stem: 'Simplify: (3x² + 2x - 5) - (x² - 3x + 2)',
+      choices: { A: '2x² + 5x - 7', B: '4x² - x - 3', C: '2x² - x - 7', D: '4x² + 5x - 7' },
+      correct: 'A',
+      domain_code: 'algebra'
+    },
+    {
+      id: 7,
+      type: 'math',
+      domain: 'Advanced Math',
+      stem: 'If sin(θ) = 0.6 and θ is in the first quadrant, what is cos(θ)?',
+      choices: { A: '0.8', B: '0.6', C: '1.0', D: '0.4' },
+      correct: 'A',
+      domain_code: 'advanced_math'
+    },
+    {
+      id: 8,
+      type: 'math',
+      domain: 'Problem Solving',
+      stem: 'The ratio of boys to girls in a class is 3:4. If there are 12 boys, how many girls are there?',
+      choices: { A: '16', B: '9', C: '15', D: '20' },
+      correct: 'A',
+      domain_code: 'problem_solving'
+    },
+    {
+      id: 9,
+      type: 'math',
+      domain: 'Algebra',
+      stem: 'Factor: x² + 7x + 12',
+      choices: { A: '(x + 3)(x + 4)', B: '(x + 2)(x + 6)', C: '(x + 1)(x + 12)', D: '(x + 5)(x + 2)' },
+      correct: 'A',
+      domain_code: 'algebra'
+    },
+    {
+      id: 10,
+      type: 'math',
+      domain: 'Advanced Math',
+      stem: 'What is the vertex of the parabola y = x² - 6x + 8?',
+      choices: { A: '(3, -1)', B: '(2, 0)', C: '(3, 1)', D: '(6, 8)' },
+      correct: 'A',
+      domain_code: 'advanced_math'
+    },
+    {
+      id: 11,
+      type: 'math',
+      domain: 'Problem Solving',
+      stem: 'A car travels 240 miles in 4 hours. What is its average speed in miles per hour?',
+      choices: { A: '60', B: '50', C: '70', D: '80' },
+      correct: 'A',
+      domain_code: 'problem_solving'
+    },
+    {
+      id: 12,
+      type: 'math',
+      domain: 'Algebra',
+      stem: 'Solve: |x - 5| = 3',
+      choices: { A: 'x = 2 or x = 8', B: 'x = 3 or x = 7', C: 'x = 1 or x = 9', D: 'x = 0 or x = 10' },
+      correct: 'A',
+      domain_code: 'algebra'
+    },
+    {
+      id: 13,
+      type: 'math',
+      domain: 'Advanced Math',
+      stem: 'If log₂(x) = 5, what is x?',
+      choices: { A: '32', B: '25', C: '10', D: '16' },
+      correct: 'A',
+      domain_code: 'advanced_math'
+    },
+    {
+      id: 14,
+      type: 'math',
+      domain: 'Problem Solving',
+      stem: 'The area of a rectangle is 48 square units. If the length is 8 units, what is the width?',
+      choices: { A: '6', B: '4', C: '12', D: '16' },
+      correct: 'A',
+      domain_code: 'problem_solving'
+    },
+    {
+      id: 15,
+      type: 'math',
+      domain: 'Algebra',
+      stem: 'Solve the system: 2x + y = 7 and x - y = 2',
+      choices: { A: 'x = 3, y = 1', B: 'x = 2, y = 3', C: 'x = 1, y = 5', D: 'x = 4, y = -1' },
+      correct: 'A',
+      domain_code: 'algebra'
+    },
+    {
+      id: 16,
+      type: 'math',
+      domain: 'Advanced Math',
+      stem: 'What is the sum of the interior angles of a hexagon?',
+      choices: { A: '720°', B: '540°', C: '900°', D: '1080°' },
+      correct: 'A',
+      domain_code: 'advanced_math'
+    },
+    {
+      id: 17,
+      type: 'math',
+      domain: 'Problem Solving',
+      stem: 'If a discount of 20% is applied to a $75 item, what is the sale price?',
+      choices: { A: '$60', B: '$55', C: '$50', D: '$65' },
+      correct: 'A',
+      domain_code: 'problem_solving'
+    },
+    {
+      id: 18,
+      type: 'math',
+      domain: 'Algebra',
+      stem: 'What is the value of (2³ × 3²) ÷ (2 × 3)?',
+      choices: { A: '36', B: '24', C: '18', D: '12' },
+      correct: 'A',
+      domain_code: 'algebra'
+    },
+    {
+      id: 19,
+      type: 'math',
+      domain: 'Advanced Math',
+      stem: 'If two angles in a triangle are 45° and 60°, what is the third angle?',
+      choices: { A: '75°', B: '70°', C: '80°', D: '85°' },
+      correct: 'A',
+      domain_code: 'advanced_math'
+    },
+    {
+      id: 20,
+      type: 'math',
+      domain: 'Problem Solving',
+      stem: 'A tank is 3/4 full of water. If it holds 120 liters when completely full, how many liters of water are in the tank?',
+      choices: { A: '90', B: '80', C: '100', D: '110' },
+      correct: 'A',
+      domain_code: 'problem_solving'
+    }
+  ];
+
+  // ============================================================
+  // STATE MACHINE & INITIALIZATION
+  // ============================================================
+
+  const testState = {
+    currentSection: 'english',
+    currentQuestionIndex: 0,
+    answers: new Map(), // Map of question index -> selected choice
+    flagged: new Set(), // Set of flagged question indices
+    timeRemaining: 31 * 60 + 45, // 31:45 in seconds
+    timerRunning: true
+  };
+
+  // Get current question bank based on section
+  function getCurrentBank() {
+    return testState.currentSection === 'english' ? englishDiagnosticBank : mathDiagnosticBank;
+  }
+
+  // ============================================================
+  // TIMER FUNCTIONALITY
+  // ============================================================
+
+  function formatTime(seconds) {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+  }
+
+  function updateTimerDisplay() {
+    document.getElementById('timer-display').textContent = formatTime(testState.timeRemaining);
+  }
+
+  // Timer countdown interval
+  const timerInterval = setInterval(() => {
+    if (testState.timerRunning && testState.timeRemaining > 0) {
+      testState.timeRemaining--;
+      updateTimerDisplay();
+    } else if (testState.timeRemaining === 0) {
+      clearInterval(timerInterval);
+      alert('Time\'s up! Test has ended.');
+    }
+  }, 1000);
+
+  // Timer toggle (click to show/hide)
+  document.getElementById('timer-toggle').addEventListener('click', function() {
+    const currentOpacity = parseFloat(this.style.opacity);
+    this.style.opacity = currentOpacity === 1 ? '0.1' : '1';
+  });
+
+  // ============================================================
+  // RENDER QUESTION FUNCTION
+  // ============================================================
+
+  function renderQuestion(index) {
+    const bank = getCurrentBank();
+    const question = bank[index];
+
+    // Update counter
+    document.getElementById('current-q-num').textContent = index + 1;
+
+    // Render passage/problem
+    const passageContainer = document.getElementById('passage-content');
+    if (question.passage) {
+      passageContainer.textContent = question.passage;
+    } else {
+      passageContainer.textContent = '';
+    }
+
+    // Show/hide calculator for math section
+    const calculatorContainer = document.getElementById('calculator-container');
+    calculatorContainer.classList.toggle('hidden', testState.currentSection !== 'math');
+
+    // Render question stem
+    document.getElementById('question-text').textContent = question.stem;
+
+    // Render choices
+    const choicesContainer = document.getElementById('choices-container');
+    choicesContainer.innerHTML = '';
+
+    ['A', 'B', 'C', 'D'].forEach(choice => {
+      const choiceBtn = document.createElement('button');
+      choiceBtn.className = `w-full p-4 bg-[#1E293B] border-2 border-[#334155] rounded-lg text-left font-['Inter'] text-white transition-all duration-150 hover:border-[#475569] cursor-pointer`;
+      
+      const isSelected = testState.answers.get(index) === choice;
+      if (isSelected) {
+        choiceBtn.classList.add('border-[#D4AF37]', 'ring-2', 'ring-[#D4AF37]', 'ring-opacity-50');
+      }
+
+      const choiceLabel = document.createElement('span');
+      choiceLabel.className = 'font-bold text-[#D4AF37] mr-3';
+      choiceLabel.textContent = choice + '.';
+
+      const choiceText = document.createElement('span');
+      choiceText.textContent = question.choices[choice];
+
+      choiceBtn.appendChild(choiceLabel);
+      choiceBtn.appendChild(choiceText);
+
+      choiceBtn.addEventListener('click', () => {
+        testState.answers.set(index, choice);
+        renderQuestion(index); // Re-render to show selection
+        updateAnswerSummary(choice);
+        updateQuestionGrid();
+      });
+
+      choicesContainer.appendChild(choiceBtn);
+    });
+
+    updateAnswerSummary(testState.answers.get(index) || null);
+  }
+
+  function updateAnswerSummary(choice) {
+    const display = document.getElementById('selected-choice-display');
+    if (choice) {
+      display.textContent = `Answer: ${choice}`;
+    } else {
+      display.textContent = 'No answer selected';
+    }
+  }
+
+  // ============================================================
+  // PROGRESS TRACKING GRID
+  // ============================================================
+
+  function updateQuestionGrid() {
+    const gridContainer = document.getElementById('question-grid');
+    gridContainer.innerHTML = '';
+
+    const bank = getCurrentBank();
+    for (let i = 0; i < bank.length; i++) {
+      const gridBtn = document.createElement('button');
+      gridBtn.className = 'w-10 h-10 rounded text-xs font-bold font-["JetBrains_Mono"] transition-all duration-150 relative';
+      gridBtn.textContent = i + 1;
+
+      // Determine state
+      const isActive = i === testState.currentQuestionIndex;
+      const isAnswered = testState.answers.has(i);
+      const isFlagged = testState.flagged.has(i);
+
+      if (isActive) {
+        gridBtn.classList.add('bg-[#0F172A]', 'border-2', 'border-[#D4AF37]', 'text-[#D4AF37]');
+      } else if (isAnswered) {
+        gridBtn.classList.add('bg-[#1E293B]', 'border-2', 'border-[#334155]', 'text-slate-300');
+      } else {
+        gridBtn.classList.add('bg-[#0F172A]', 'border-2', 'border-[#334155]', 'text-slate-400', 'hover:border-[#475569]');
+      }
+
+      // Flag indicator
+      if (isFlagged) {
+        const flagDot = document.createElement('div');
+        flagDot.className = 'absolute top-0 right-0 w-2 h-2 bg-amber-400 rounded-full';
+        gridBtn.appendChild(flagDot);
+      }
+
+      gridBtn.addEventListener('click', () => {
+        testState.currentQuestionIndex = i;
+        renderQuestion(i);
+        updateQuestionGrid();
+        updateNavigationButtons();
+      });
+
+      gridContainer.appendChild(gridBtn);
+    }
+  }
+
+  // ============================================================
+  // NAVIGATION
+  // ============================================================
+
+  function updateNavigationButtons() {
+    const bank = getCurrentBank();
+    const backBtn = document.getElementById('nav-back-btn');
+    const nextBtn = document.getElementById('nav-next-btn');
+
+    backBtn.disabled = testState.currentQuestionIndex === 0;
+    
+    if (testState.currentQuestionIndex === bank.length - 1) {
+      nextBtn.textContent = 'Submit Section →';
+    } else {
+      nextBtn.textContent = 'Next →';
+    }
+  }
+
+  document.getElementById('nav-back-btn').addEventListener('click', () => {
+    if (testState.currentQuestionIndex > 0) {
+      testState.currentQuestionIndex--;
+      renderQuestion(testState.currentQuestionIndex);
+      updateQuestionGrid();
+      updateNavigationButtons();
+    }
+  });
+
+  document.getElementById('nav-next-btn').addEventListener('click', () => {
+    const bank = getCurrentBank();
+    if (testState.currentQuestionIndex === bank.length - 1) {
+      // End of section
+      if (testState.currentSection === 'english') {
+        // Show section transition modal
+        document.getElementById('section-modal').classList.remove('hidden');
+      } else {
+        // End of test
+        alert('Test complete! Results will be displayed.');
+      }
+    } else {
+      testState.currentQuestionIndex++;
+      renderQuestion(testState.currentQuestionIndex);
+      updateQuestionGrid();
+      updateNavigationButtons();
+    }
+  });
+
+  document.getElementById('continue-to-math-btn').addEventListener('click', () => {
+    document.getElementById('section-modal').classList.add('hidden');
+    testState.currentSection = 'math';
+    testState.currentQuestionIndex = 0;
+    testState.answers.clear();
+    testState.flagged.clear();
+    renderQuestion(0);
+    updateQuestionGrid();
+    updateNavigationButtons();
+  });
+
+  // Mark for Review toggle
+  document.getElementById('mark-review-btn').addEventListener('click', () => {
+    const index = testState.currentQuestionIndex;
+    if (testState.flagged.has(index)) {
+      testState.flagged.delete(index);
+      document.getElementById('mark-review-btn').classList.remove('bg-amber-900/50', 'border-amber-600', 'text-amber-400');
+      document.getElementById('mark-review-btn').classList.add('hover:border-[#D4AF37]', 'hover:text-[#D4AF37]');
+    } else {
+      testState.flagged.add(index);
+      document.getElementById('mark-review-btn').classList.add('bg-amber-900/50', 'border-amber-600', 'text-amber-400');
+    }
+    updateQuestionGrid();
+  });
+
+  // ============================================================
+  // INITIALIZATION
+  // ============================================================
+
+  renderQuestion(0);
+  updateQuestionGrid();
+  updateNavigationButtons();
+</script>
