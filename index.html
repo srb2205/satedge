@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SAT Edge - Premium Test Prep SaaS</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <style>
+    :root {
+      --background: #0F172A;
+      --surface: #1E293B;
+      --border: #334155;
+    }
+    
+    * {
+      font-family: 'Inter', sans-serif;
+    }
+    
+    h1, h2, h3, h4, h5, h6 {
+      font-family: 'Space Grotesk', sans-serif;
+    }
+    
+    code, pre, [data-metric] {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    
+    body {
+      background-color: var(--background);
+      color: #e2e8f0;
+    }
+  </style>
+</head>
+<body class="bg-[#0F172A] text-slate-200 overflow-x-hidden">
+  
+  <!-- Homepage Container -->
+  <div id="homepage-container">
+    <!-- Placeholder for Minimalist Landing Page & Scholarship Form -->
+  </div>
+  
+  <!-- Testing Engine Container -->
+  <div id="testing-engine-container" class="hidden">
+    <!-- Placeholder for Bluebook 20-20 Testing Client -->
+  </div>
+  
+  <!-- Admin Dashboard Container -->
+  <div id="admin-dashboard-container" class="hidden">
+    <!-- Placeholder for High-Density Telemetry Analytics -->
+  </div>
+
+  <script>
+    const routes = {
+      '#/': () => showPage('homepage-container'),
+      '#/practice': () => showPage('testing-engine-container'),
+      '#/admin': () => showPage('admin-dashboard-container')
+    };
+    
+    function showPage(id) {
+      ['homepage-container', 'testing-engine-container', 'admin-dashboard-container'].forEach(c => {
+        document.getElementById(c)?.classList.add('hidden');
+      });
+      const target = document.getElementById(id);
+      if (target) target.classList.remove('hidden');
+      window.scrollTo(0, 0);
+    }
+    
+    window.addEventListener('hashchange', () => { 
+      const route = routes[window.location.hash];
+      if (route) route();
+      else showPage('homepage-container');
+    });
+    
+    window.addEventListener('DOMContentLoaded', () => { 
+      const route = routes[window.location.hash];
+      if (route) route();
+      else showPage('homepage-container');
+    });
+  </script>
+  
+</body>
+</html>
